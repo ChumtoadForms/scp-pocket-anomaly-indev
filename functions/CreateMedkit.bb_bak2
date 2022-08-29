@@ -1,0 +1,14 @@
+Function CreateMedkit(a, x1, x2, z1, z2, gfx)
+
+For i = 1 To a
+mk.medkit = New medkit
+mk\mesh = CreateCube()
+mk\x# = Rnd(x1, x2)
+mk\y# = -0.30
+mk\z# = Rnd(x1, x2)
+EntityTexture mk\mesh, gfx
+PositionEntity mk\mesh, mk\x#, mk\y#, mk\z#
+ScaleEntity mk\mesh, 0.50, 0.50, 0.50
+Next
+
+End Function
