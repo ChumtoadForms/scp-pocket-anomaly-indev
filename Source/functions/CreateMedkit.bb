@@ -1,0 +1,12 @@
+Function CreateMedkit(x#, y#, z#, gfx)
+
+mk.medkit = New medkit
+mk\mesh = CreateCube()
+mk\x# = x#
+mk\y# = y#
+mk\z# = z#
+EntityTexture mk\mesh, gfx
+PositionEntity mk\mesh, mk\x#, mk\y#, mk\z#
+ScaleEntity mk\mesh, 0.50, 0.50, 0.50
+
+End Function

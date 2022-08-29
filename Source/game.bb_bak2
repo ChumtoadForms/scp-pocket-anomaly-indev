@@ -1,0 +1,161 @@
+Graphics3D 800, 600
+SetBuffer BackBuffer()
+AppTitle "SCP - Pocket Anomaly"
+
+Type medkit
+
+	Field mesh
+	Field x#
+	Field y#
+	Field z#
+	
+End Type 
+6
+;loading files
+Global earth_gfx = LoadTexture("GFX\earth.jpg")
+Global medkit_gfx = LoadTexture("GFX\medkit.png")
+Global medkitclick_sfx = LoadSound("SFX\medkitsound.mp3")
+Global ambience = LoadSound("SFX\ambience.mp3")
+Global walk = LoadSound("SFX\walk.mp3")
+Global walk2 = LoadSound("SFX\walk2.mp3")
+Global map = LoadMesh("maplet\testmap.b3d")
+
+;types
+type_player = 1
+type_map = 2
+
+LoopSound ambience
+PlaySound ambience
+
+;includes
+Include "functions\CreateMedkit.bb"
+
+player = CreateCamera()
+
+PositionEntity player, 0, 0, -11
+EntityType player, type_player
+EntityRadius player, 1.05
+
+
+PositionEntity map, 0, -1, 0
+EntityType map, type_map
+
+Global score = 0
+Global energy = 1000
+Global hp = 10
+
+; CreateMedkit(9.5, 4, 18.625, medkit_gfx)
+
+;timers
+timer_walk = 0
+timer_walk2 = 0
+
+While Not KeyHit(1)
+
+Collisions type_player, type_map, 2, 2
+
+For mk.medkit = Each medkit
+
+	TurnEntity mk\mesh, 0, 0.50, 0
+	If EntityDistance(player, mk\mesh) < 1.90
+	
+	score = score + 100
+	energy = energy + (1000 - energy)
+	hp = hp + (100 - hp)
+	PlaySound medkitclick_sfx
+	HideEntity mk\mesh
+	Delete mk.medkit
+	
+	EndIf
+
+Next
+
+If KeyDown(17) ; W
+
+	MoveEntity player, 0, 0, 0.01
+	timer_walk = timer_walk + 1
+	timer_walk2 = timer_walk2 + 1
+	timer_stamina = timer_stamina + 1
+	If timer_walk >= 100
+	
+		PlaySound walk
+		timer_walk = 0	
+		
+
+		If timer_walk2 >= 130
+	
+			PlaySound walk2
+			timer_walk2 = 0
+
+		EndIf
+
+	EndIf
+
+EndIf
+
+If KeyDown(31) ; S
+
+	MoveEntity player, 0, 0, -0.01
+	timer_walk = timer_walk + 1
+	timer_walk2 = timer_walk2 + 1
+	If timer_walk >= 100
+	
+		PlaySound walk
+		timer_walk = 0	
+		
+
+		If timer_walk2 >= 130
+	
+			PlaySound walk2
+			timer_walk2 = 0
+
+		EndIf
+
+	EndIf
+
+
+EndIf
+
+If KeyDown(30) TurnEntity player, 0, 0.80, 0 ; A
+If KeyDown(32) TurnEntity player, 0, -0.80, 0 ; D
+
+If KeyDown(17) And KeyDown(42) ; Shift + W
+
+	If energy <> 0
+
+		MoveEntity player, 0, 0, 0.02
+		energy = energy - 1
+
+	EndIf
+
+	If timer_walk >= 80
+	
+		PlaySound walk
+		timer_walk = 0	
+		
+
+		If timer_walk2 >= 110
+	
+			PlaySound walk2
+			timer_walk2 = 0
+
+		EndIf
+
+	EndIf
+
+
+
+EndIf
+
+RenderWorld
+UpdateWorld
+Text 0, 0, "Score:"
+Text 34, 0, score
+Text 10, 560, "Stamina:"
+Text 55, 560, energy
+Text 20, 572, "Heal:"
+Text 50, 572, hp
+Flip
+Wend
+
+End
